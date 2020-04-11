@@ -177,7 +177,7 @@ class SideScrollViewItem extends StatelessWidget
     }
 
     return SizedBox(
-      width: 130,
+      width: config.width,
       child: Stack(
         children: stackChildren,
       ),

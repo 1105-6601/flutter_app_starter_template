@@ -13,6 +13,7 @@ class SideScrollViewItemConfig
   final String counterUnit;
   final bool fullHeight;
   final List<Color> bgGradientColors;
+  final double width;
 
   SideScrollViewItemConfig({
     this.emblemImage,
@@ -24,8 +25,9 @@ class SideScrollViewItemConfig
     this.counterUnit: '件',
     this.fullHeight: false,
     this.bgGradientColors: const <Color>[
+      AppTheme.grey,
       AppTheme.darkGrey,
-      AppTheme.darkGrey,
-    ]
+    ],
+    this.width: 130,
   });
 }
