@@ -1,0 +1,154 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../app-theme.dart';
+
+class UiUtil
+{
+  static Future<dynamic> startLoadingAnimation(BuildContext context, {String text = 'Loading...'}) async
+  {
+    await Future.delayed(Duration.zero, () {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+              child: Container(
+                height: 200,
+                child: Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                    child: new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        SpinKitFadingCube(size: 44.0, color: AppTheme.darkGrey),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 44.0),
+                          child: new Text(text),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+          );
+        },
+      );
+    });
+
+    return await Future.delayed(Duration(seconds: 1));
+  }
+
+  static void stopLoadingAnimation(BuildContext context)
+  {
+    Navigator.pop(context);
+  }
+
+  static void alert(BuildContext context, {
+    String title,
+    String body
+  }) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(body),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void confirm(BuildContext context, {
+    String title,
+    String body,
+    VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(body),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('キャンセル'),
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                onConfirm();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// @see https://kapeli.com/cheat_sheets/iOS_Design.docset/Contents/Resources/Documents/index
+  static bool isIPhoneAndOverThan5Point8InchModel(MediaQueryData mediaQuery)
+  {
+    if (!Platform.isIOS) {
+      return false;
+    }
+
+    var size = mediaQuery.size;
+
+    if (
+      size.height == 812.0 || size.width == 812.0 ||
+      size.height == 896.0 || size.width == 896.0
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static double displayBottomMargin(BuildContext context)
+  {
+    var mediaQueryData = MediaQuery.of(context);
+
+    if (!isIPhoneAndOverThan5Point8InchModel(mediaQueryData)) {
+      return 0;
+    }
+
+    var homeIndicatorHeight = mediaQueryData.orientation == Orientation.portrait ? 22.0 : 20.0;
+
+    return homeIndicatorHeight;
+  }
+
+  static Color hexColor(String hexColor)
+  {
+    hexColor = hexColor.toUpperCase().replaceAll('#', '');
+
+    if (hexColor.length == 6) {
+      hexColor = 'FF' + hexColor;
+    }
+
+    return Color(int.parse(hexColor, radix: 16));
+  }
+
+  static Animation createAnimation(AnimationController animationController, int position)
+  {
+    final delay = 0.1;
+
+    double actualDelay = delay * position;
+    if (actualDelay > 1) {
+      actualDelay = 1;
+    }
+
+    return Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Interval(actualDelay, 1.0, curve: Curves.fastOutSlowIn))
+    );
+  }
+}
