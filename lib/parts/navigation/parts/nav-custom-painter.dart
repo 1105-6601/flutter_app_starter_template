@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
-class NavCustomPainter extends CustomPainter {
+class NavCustomPainter extends CustomPainter
+{
   double loc;
   double s;
   Color color;
   TextDirection textDirection;
+  bool isShadow;
 
   NavCustomPainter(
-      double startingLoc, int itemsLength, this.color, this.textDirection) {
+    double startingLoc,
+    int itemsLength,
+    this.color,
+    this.textDirection, {
+    this.isShadow: false,
+  }) {
     final span = 1.0 / itemsLength;
     s = 0.2;
     double l = startingLoc + (span - s) / 2;
@@ -15,10 +22,16 @@ class NavCustomPainter extends CustomPainter {
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(Canvas canvas, Size size)
+  {
     final paint = Paint()
       ..color = color
-      ..style = PaintingStyle.fill;
+      ..style = PaintingStyle.fill
+    ;
+
+    if (isShadow) {
+      paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 10.0);
+    }
 
     final path = Path()
       ..moveTo(0, 0)
@@ -43,11 +56,14 @@ class NavCustomPainter extends CustomPainter {
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
-    canvas.drawPath(path, paint);
+
+    canvas
+      ..drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
+  bool shouldRepaint(CustomPainter oldDelegate)
+  {
     return this != oldDelegate;
   }
 }

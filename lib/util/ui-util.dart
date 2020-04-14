@@ -5,43 +5,88 @@ import '../app-theme.dart';
 
 class UiUtil
 {
-  static Future<dynamic> startLoadingAnimation(BuildContext context, {String text = 'Loading...'}) async
+  static VoidCallback showLoadingAnimation(BuildContext context, {String text = 'Loading...'})
   {
-    await Future.delayed(Duration.zero, () {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Center(
+    final contents = Center(
+      child: Container(
+        height: 200,
+        child: Dialog(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48.0),
+            child: new Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SpinKitFadingCube(size: 44.0, color: AppTheme.darkGrey),
+                Padding(
+                  padding: const EdgeInsets.only(left: 44.0),
+                  child: new Text(text),
+                ),
+              ],
+            ),
+          ),
+        ),
+      )
+    );
+
+    final entry = OverlayEntry(
+      builder: (context) {
+        final size = MediaQuery.of(context).size;
+        return Positioned(
+          top: 0,
+          left: 0,
+          child: Container(
+            width: size.width,
+            height: size.height,
+            color: AppTheme.shadow3,
+            child: contents,
+          )
+        );
+      }
+    );
+
+    Future.delayed(Duration.zero, () {
+      Overlay.of(context).insert(entry);
+    });
+
+    /// Return onFinish function.
+    return () {
+      entry.remove();
+    };
+  }
+
+  static VoidCallback showProgressIndicator(
+    BuildContext context, {
+    Color color: AppTheme.white
+  })
+  {
+    final entry = OverlayEntry(
+        builder: (context) {
+          final size = MediaQuery.of(context).size;
+          return Positioned(
+              top: 0,
+              left: 0,
               child: Container(
-                height: 200,
-                child: Dialog(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 48.0),
-                    child: new Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        SpinKitFadingCube(size: 44.0, color: AppTheme.darkGrey),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 44.0),
-                          child: new Text(text),
-                        ),
-                      ],
-                    ),
+                width: size.width,
+                height: size.height,
+                color: AppTheme.shadow3,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
                   ),
                 ),
               )
           );
-        },
-      );
+        }
+    );
+
+    Future.delayed(Duration.zero, () {
+      Overlay.of(context).insert(entry);
     });
 
-    return await Future.delayed(Duration(seconds: 1));
-  }
-
-  static void stopLoadingAnimation(BuildContext context)
-  {
-    Navigator.pop(context);
+    /// Return onFinish function.
+    return () {
+      entry.remove();
+    };
   }
 
   static void alert(BuildContext context, {

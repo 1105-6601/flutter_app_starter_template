@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_starter_template/pages/login/login.dart';
@@ -29,12 +30,21 @@ void main() async
 
 class AppRoot extends StatelessWidget
 {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context)
   {
+    return BotToastInit(
+      child: getMaterialApp(),
+    );
+  }
+
+  Widget getMaterialApp()
+  {
     return MaterialApp(
       title: 'Flutter App Starter Template',
+      navigatorObservers: [
+        BotToastNavigatorObserver()
+      ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.pink,
@@ -44,4 +54,5 @@ class AppRoot extends StatelessWidget
       home: Login(),
     );
   }
+
 }

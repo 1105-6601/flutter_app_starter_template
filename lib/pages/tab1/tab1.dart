@@ -138,7 +138,7 @@ class Tab1 extends BaseTab
     listViews.add(
       TitleView(
         title: 'タイトル1',
-        subTitle: 'Alphabet Subtitle',
+        subTitle: 'Sample content',
         animation: UiUtil.createAnimation(animationController, 2),
         animationController: animationController,
       ),
@@ -158,7 +158,7 @@ class Tab1 extends BaseTab
     listViews.add(
       TitleView(
         title: 'タイトル2',
-        subTitle: 'マルチバイトサブタイトル',
+        subTitle: 'マルチバイト',
         iconPositionTop: 2,
         animation: UiUtil.createAnimation(animationController, 4),
         animationController: animationController,
@@ -198,7 +198,7 @@ class Tab1 extends BaseTab
     listViews.add(
       TitleView(
         title: 'タイトル4',
-        subTitle: 'アイコン無しサブタイトル',
+        subTitle: 'アイコン無し',
         subTitleIcon: false,
         animation: UiUtil.createAnimation(animationController, 8),
         animationController: animationController,
@@ -218,7 +218,7 @@ class Tab1 extends BaseTab
     listViews.add(
       TitleView(
         title: 'タイトル5',
-        subTitle: 'アイコン変更サブタイトル',
+        subTitle: 'アイコン変更',
         subTitleIconData: Icons.add_box,
         iconPositionTop: 3,
         animation: UiUtil.createAnimation(animationController, 10),
@@ -239,7 +239,7 @@ class Tab1 extends BaseTab
     listViews.add(
       TitleView(
         title: 'タイトル6',
-        subTitle: 'No icon with alphabet subtitle',
+        subTitle: 'No icon subtitle',
         subTitlePositionTop: 3,
         subTitleIcon: false,
         animation: UiUtil.createAnimation(animationController, 12),

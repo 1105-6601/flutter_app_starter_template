@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_starter_template/parts/view/photo-view.dart';
 import 'package:flutter_app_starter_template/parts/view/stacked-card.dart';
+import '../../app-theme.dart';
 import 'animated-view.dart';
 
 class StackedCardViewItemContent extends StatefulWidget
@@ -94,7 +95,7 @@ class _StackedCardViewItemContentState extends State<StackedCardViewItemContent>
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
-            color: const Color(0x11000000),
+            color: AppTheme.shadow1,
             blurRadius: 5.0,
             spreadRadius: 2.0,
           )

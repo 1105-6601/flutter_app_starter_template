@@ -125,9 +125,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTic
                   decoration: BoxDecoration(
                     boxShadow: <BoxShadow>[
                       BoxShadow(
-                          color: AppTheme.grey.withOpacity(0.1),
-                          offset: Offset(1.1, 1.1),
-                          blurRadius: 10.0
+                        color: AppTheme.shadow16,
+                        offset: Offset(1.1, 1.1),
+                        blurRadius: 10.0
                       ),
                     ],
                   ),
@@ -140,6 +140,17 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTic
                     ),
                   ),
                 )
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 2 - (75.0 - widget.height),
+            child: CustomPaint(
+              painter: NavCustomPainter(_pos, _length, AppTheme.shadow16, Directionality.of(context), isShadow: true),
+              child: Container(
+                height: 75.0,
               ),
             ),
           ),
@@ -159,28 +170,31 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar> with SingleTic
             right: 0,
             bottom: 0 - (75.0 - widget.height),
             child: SizedBox(
-                height: 100.0,
-                child: Row(
-                  children: widget.items.map((item) {
-                    return NavButton(
-                      onTap: _buttonTap,
-                      position: _pos,
-                      length: _length,
-                      index: widget.items.indexOf(item),
-                      child: item,
-                    );
-                }).toList())),
+              height: 100.0,
+              child: Row(
+                children: widget.items.map((item) {
+                  return NavButton(
+                    onTap: _buttonTap,
+                    position: _pos,
+                    length: _length,
+                    index: widget.items.indexOf(item),
+                    child: item,
+                  );
+              }).toList())
+            ),
           ),
         ],
       ),
     );
   }
 
-  void setPage(int index){
+  void setPage(int index)
+  {
     _buttonTap(index);
   }
 
-  void _buttonTap(int index) {
+  void _buttonTap(int index)
+  {
     if (widget.onTap != null) {
       widget.onTap(index);
     }

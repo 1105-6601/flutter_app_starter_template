@@ -75,8 +75,8 @@ class _AuthorizedState extends State<Authorized> with TickerProviderStateMixin
   {
     final list = [
       Icon(Icons.dashboard, size: 30),
-      Icon(Icons.search, size: 30),
-      Icon(Icons.settings, size: 30),
+      Icon(Icons.view_carousel, size: 30),
+      Icon(Icons.chat, size: 30),
     ];
 
     return list;

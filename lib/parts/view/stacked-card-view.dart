@@ -1,4 +1,6 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_starter_template/parts/view/stacked-card-set.dart';
 import 'package:flutter_app_starter_template/parts/view/stacked-card-view-item.dart';
 import 'package:flutter_app_starter_template/parts/view/stacked-card.dart';
 
@@ -6,12 +8,12 @@ class StackedCardView extends StatefulWidget
 {
   final AnimationController animationController;
   final Animation animation;
-  final List<StackedCard> cards;
+  final StackedCardSet cardSet;
 
   StackedCardView({
     this.animationController,
     this.animation,
-    @required this.cards,
+    @required this.cardSet,
   });
 
   @override
@@ -20,7 +22,6 @@ class StackedCardView extends StatefulWidget
 
 class _StackedCardViewState extends State<StackedCardView>
 {
-  int _currentCardIndex = 0;
   double _nextCardScale = 0.0;
   Key _frontItemKey;
 
@@ -42,22 +43,7 @@ class _StackedCardViewState extends State<StackedCardView>
 
   void _setItemKey()
   {
-    _frontItemKey = Key(_getFirstCard().title);
-  }
-
-  void _incrementCardIndex()
-  {
-    _currentCardIndex = _currentCardIndex < widget.cards.length - 1 ? _currentCardIndex + 1 : 0;
-  }
-
-  StackedCard _getFirstCard()
-  {
-    return widget.cards[_currentCardIndex];
-  }
-
-  StackedCard _getNextCard()
-  {
-    return _currentCardIndex < widget.cards.length - 1 ? widget.cards[_currentCardIndex + 1] : widget.cards[0];
+    _frontItemKey = Key(widget.cardSet.getKey());
   }
 
   void _onSlideUpdate(double distance)
@@ -82,8 +68,17 @@ class _StackedCardViewState extends State<StackedCardView>
         break;
     }
 
+    /// スワイプした方向をフィードバック
+    BotToast.showText(
+      text: '$direction',
+      align: Alignment(0.0, -0.91),
+      duration: const Duration(seconds: 1)
+    );
+
+    /// カードインデックスを次の番号へ変更
+    /// 再レンダリングさせるため Key を更新して状態変更を通知
     setState(() {
-      _incrementCardIndex();
+      widget.cardSet.incrementCardIndex();
       _setItemKey();
     });
   }
@@ -94,7 +89,7 @@ class _StackedCardViewState extends State<StackedCardView>
       animationController: widget.animationController,
       animation: widget.animation,
       isDraggable: false,
-      card: _getNextCard(),
+      card: widget.cardSet.getNextCard(),
       scale: _nextCardScale
     );
   }
@@ -107,7 +102,7 @@ class _StackedCardViewState extends State<StackedCardView>
       animation: widget.animation,
       onSlideUpdate: _onSlideUpdate,
       onSlideComplete: _onSlideComplete,
-      card: _getFirstCard(),
+      card: widget.cardSet.getFirstCard(),
     );
   }
 

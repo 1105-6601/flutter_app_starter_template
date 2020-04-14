@@ -1,15 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app_starter_template/parts/view/stacked-card-view-item-content.dart';
 import 'package:flutter_app_starter_template/parts/view/stacked-card.dart';
 import 'package:fluttery_dart2/layout.dart';
-
-enum SlideDirection {
-  Left,
-  Right,
-  Up,
-}
 
 class StackedCardViewItem extends StatefulWidget
 {
@@ -143,6 +136,76 @@ class _StackedCardViewItemState extends State<StackedCardViewItem> with TickerPr
           });
         }
       });
+
+    if (widget.isDraggable) {
+      widget.card.addListener(_slideFromExternal);
+    }
+  }
+
+  void _slideFromExternal()
+  {
+    switch (widget.card.direction) {
+      case SlideDirection.Left:
+        _slideLeft();
+        break;
+      case SlideDirection.Right:
+        _slideRight();
+        break;
+      case SlideDirection.Up:
+        _slideUp();
+        break;
+    }
+  }
+
+  void _slideLeft()
+  {
+    if (slideOutAnimation.isAnimating) {
+      return;
+    }
+
+    final screenSize = MediaQuery.of(context).size;
+    dragStartPosition = _randomDragStartPosition();
+    slideOutTween = Tween(begin: const Offset(0.0, 0.0), end: Offset(screenSize.width * -2, 0.0));
+    slideOutAnimation.forward(from: 0.0);
+    slideOutDirection = SlideDirection.Left;
+  }
+
+  void _slideRight()
+  {
+    if (slideOutAnimation.isAnimating) {
+      return;
+    }
+
+    final screenSize = MediaQuery.of(context).size;
+    dragStartPosition = _randomDragStartPosition();
+    slideOutTween = Tween(begin: const Offset(0.0, 0.0), end: Offset(screenSize.width * 2, 0.0));
+    slideOutAnimation.forward(from: 0.0);
+    slideOutDirection = SlideDirection.Right;
+  }
+
+  void _slideUp()
+  {
+    if (slideOutAnimation.isAnimating) {
+      return;
+    }
+
+    final screenSize = MediaQuery.of(context).size;
+    dragStartPosition = _randomDragStartPosition();
+    slideOutTween = Tween(begin: const Offset(0.0, 0.0), end: Offset(0.0, screenSize.height * -2));
+    slideOutAnimation.forward(from: 0.0);
+    slideOutDirection = SlideDirection.Up;
+  }
+
+  Offset _randomDragStartPosition()
+  {
+    final screenSize = MediaQuery.of(context).size;
+
+    final itemContext = itemKey.currentContext;
+    final itemTopLeft = (itemContext.findRenderObject() as RenderBox).localToGlobal(const Offset(0.0, 0.0));
+    final dragStartY = screenSize.height * (new Random().nextDouble() < 0.5 ? 0.25 : 0.75) + itemTopLeft.dy;
+    final dragStartX = screenSize.width / 2 + itemTopLeft.dx;
+
+    return Offset(dragStartX, dragStartY);
   }
 
   @override
@@ -150,6 +213,9 @@ class _StackedCardViewItemState extends State<StackedCardViewItem> with TickerPr
   {
     slideBackAnimation.dispose();
     slideOutAnimation.dispose();
+
+    widget.card.removeListener(_slideFromExternal);
+
     super.dispose();
   }
 
@@ -195,6 +261,10 @@ class _StackedCardViewItemState extends State<StackedCardViewItem> with TickerPr
   /// コンテナのドラッグが解除された際に実行
   void _onPanEnd(DragEndDetails details)
   {
+    if (!widget.isDraggable) {
+      return;
+    }
+
     /// ドラッグされた方向をベクトル成分(x, y)として計算
     /// Offset.distance は(0, 0)から現在位置の対角距離
     /// Offset(xの移動量, yの移動量) / 移動した距離（対角距離）、なので

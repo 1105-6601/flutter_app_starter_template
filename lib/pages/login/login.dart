@@ -57,6 +57,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context)
   {
+    return buildContainer();
+  }
+
+  Widget buildContainer()
+  {
     return Container(
       color: AppTheme.background,
       child: Scaffold(
@@ -82,9 +87,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin
 
   Future<dynamic> login(String email, String password) async
   {
+    final onFinish = UiUtil.showProgressIndicator(context);
+
     // FIXME: 適宜コメント解除して実装
-//    await UiUtil.startLoadingAnimation(context);
-//
 //    bool ng = false;
 //    try {
 //      final response = await _userRepository.login(email, password);
@@ -93,7 +98,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin
 //      ng = true;
 //    }
 //
-//    UiUtil.stopLoadingAnimation(context);
+//    onFinish();
 //
 //    if (ng) {
 //      UiUtil.alert(context,
@@ -103,7 +108,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin
 //      return;
 //    }
 
-    this._moveToAuthorizedRoute();
+    /// ローディングアニメーション実装サンプル
+    Future.delayed(Duration(seconds: 1), () {
+      onFinish();
+      this._moveToAuthorizedRoute();
+    });
   }
 
   Future<bool> _checkTokenValidity() async

@@ -1,6 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app_starter_template/entity/message.dart';
 import 'package:flutter_app_starter_template/parts/view/animated-view.dart';
+import 'package:flutter_app_starter_template/parts/view/chat-text-group.dart';
+import 'package:flutter_app_starter_template/parts/view/chat-user.dart';
 import 'package:flutter_app_starter_template/util/ui-util.dart';
 import '../app-theme.dart';
 
@@ -8,6 +12,7 @@ enum BaseTabType
 {
   List,
   Column,
+  Chat,
 }
 
 abstract class BaseTab extends StatefulWidget
@@ -17,77 +22,255 @@ abstract class BaseTab extends StatefulWidget
     this.animationController,
     this.changeTabBody,
     this.type,
+    this.showBackLink: false,
+    this.backIcon: Icons.arrow_back_ios,
   }) : super(key: key);
 
   const BaseTab.list({
     Key key,
     this.animationController,
     this.changeTabBody,
-  }) : type = BaseTabType.List, super(key: key);
+    this.showBackLink: false,
+    this.backIcon: Icons.arrow_back_ios,
+  }) : type = BaseTabType.List,
+       super(key: key);
 
   const BaseTab.column({
     Key key,
     this.animationController,
     this.changeTabBody,
-  }) : type = BaseTabType.Column, super(key: key);
+    this.showBackLink: false,
+    this.backIcon: Icons.arrow_back_ios,
+  }) : type = BaseTabType.Column,
+       super(key: key);
+
+  const BaseTab.chat({
+    Key key,
+    this.animationController,
+    this.changeTabBody,
+    this.showBackLink: false,
+    this.backIcon: Icons.arrow_back_ios,
+  }) : type = BaseTabType.Chat,
+       super(key: key);
 
   final AnimationController animationController;
   final Function(Widget widget) changeTabBody;
   final BaseTabType type;
+  final bool showBackLink;
+  final IconData backIcon;
 
   @override
-  _BaseTabState createState() => _BaseTabState();
-
-  @protected
-  List<Widget> generateWidgets();
-
-  @protected
-  Image resolveIconImage();
+  BaseTabState createState() => BaseTabState();
 
   @protected
   String getTitle();
+
+  @protected
+  List<Widget> generateWidgets()
+  {
+    return [];
+  }
+
+  @protected
+  Image resolveIconImage()
+  {
+    return null;
+  }
+
+  @protected
+  String resolveIconImageAsUrl()
+  {
+    return null;
+  }
+
+  @protected
+  Widget buildChatInputControlBar()
+  {
+    return const SizedBox(width: 0, height: 0);
+  }
+
+  @protected
+  Future<List<Message>> initMessages() async
+  {
+    return [];
+  }
+
+  @protected
+  Future<void> loadPastMessages(DateTime before, BaseTabState state) async
+  {
+  }
+
+  @protected
+  List<ChatTextGroup> buildMessageGroups(List<Message> messages)
+  {
+    return [];
+  }
+
+
+  @protected
+  void onBackLinkTap()
+  {
+  }
 }
 
-class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
+class BaseTabScrollState extends ChangeNotifier
 {
+  static BaseTabScrollState _instance;
+
+  factory BaseTabScrollState() {
+    if (_instance == null) {
+      _instance = BaseTabScrollState._internal();
+    }
+
+    return _instance;
+  }
+
+  BaseTabScrollState._internal();
+
+  ScrollController _controller;
+
+  void setController(ScrollController controller)
+  {
+    _controller = controller;
+  }
+
+  ScrollController getController()
+  {
+    return _controller;
+  }
+
+  void onScroll()
+  {
+    notifyListeners();
+  }
+}
+
+class BaseTabTextEditingState extends ChangeNotifier
+{
+  static BaseTabTextEditingState _instance;
+
+  factory BaseTabTextEditingState() {
+    if (_instance == null) {
+      _instance = BaseTabTextEditingState._internal();
+    }
+
+    return _instance;
+  }
+
+  BaseTabTextEditingState._internal();
+
+  TextEditingController _controller;
+
+  void setController(TextEditingController controller)
+  {
+    _controller = controller;
+  }
+
+  TextEditingController getController()
+  {
+    return _controller;
+  }
+
+  void notify()
+  {
+    notifyListeners();
+  }
+}
+
+class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
+{
+  TextEditingController _textEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
-
   Animation<double> _topBarAnimation;
-
   double _topBarOpacity = 0.0;
+  List<Widget> _widgets = [];
+  List<Message> _messages = [];
+  bool _messagesInitialized = false;
 
-  List<Widget> _widgets = <Widget>[];
+  void addMessages(List<Message> messages)
+  {
+    setState(() {
+      _messages.addAll(messages);
+    });
+  }
 
   @override
   void initState()
   {
+    if (widget.type == BaseTabType.Chat) {
+      _topBarOpacity = 1.0;
+    }
+
     _topBarAnimation = UiUtil.createAnimation(widget.animationController, 0);
 
+    final minAnimateHeight = 0;
+    final maxAnimateHeight = 24;
+
     _scrollController.addListener(() {
-      if (_scrollController.offset >= 24) {
+
+      if (widget.type == BaseTabType.Chat) {
         if (_topBarOpacity != 1.0) {
           setState(() {
             _topBarOpacity = 1.0;
           });
         }
-      } else if (_scrollController.offset <= 24 && _scrollController.offset >= 0) {
-        if (_topBarOpacity != _scrollController.offset / 24) {
-          setState(() {
-            _topBarOpacity = _scrollController.offset / 24;
-          });
-        }
-      } else if (_scrollController.offset <= 0) {
-        if (_topBarOpacity != 0.0) {
-          setState(() {
-            _topBarOpacity = 0.0;
-          });
+      } else {
+        if (_scrollController.offset > maxAnimateHeight) {
+          if (_topBarOpacity != 1.0) {
+            setState(() {
+              _topBarOpacity = 1.0;
+            });
+          }
+        } else if (minAnimateHeight < _scrollController.offset && _scrollController.offset <= maxAnimateHeight) {
+          if (_topBarOpacity != _scrollController.offset / maxAnimateHeight) {
+            setState(() {
+              _topBarOpacity = _scrollController.offset / maxAnimateHeight;
+            });
+          }
+        } else if (_scrollController.offset <= minAnimateHeight) {
+          if (_topBarOpacity != 0.0) {
+            setState(() {
+              _topBarOpacity = 0.0;
+            });
+          }
         }
       }
+
+      BaseTabScrollState().onScroll();
     });
+
+    BaseTabScrollState().setController(_scrollController);
+    BaseTabTextEditingState()
+      ..setController(_textEditingController)
+      ..addListener(_onMessageReceived);
 
     _widgets = widget.generateWidgets();
 
     super.initState();
+  }
+
+  void _onMessageReceived()
+  {
+    final value = _textEditingController.text.trim();
+    if (value == '') {
+      return;
+    }
+
+    final newMessage = Message(
+      isImage: false,
+      text:    value,
+      date:    DateTime.now(),
+      user:    ChatUser.generateMockSelf(), // FIXME: Replace to valid logged in user.
+    );
+
+    setState(() {
+      final newMessages = <Message>[newMessage];
+      newMessages.addAll(_messages);
+      _messages = newMessages;
+    });
+
+    _textEditingController.clear();
+    _scrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   @override
@@ -97,17 +280,36 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
 
     switch (widget.type) {
       case BaseTabType.List:
-        return createListView();
+        return _createListView();
         break;
       case BaseTabType.Column:
-        return createColumnView();
+        return _createColumnView();
+        break;
+      case BaseTabType.Chat:
+        return _createChatView();
         break;
       default:
         return Container();
     }
   }
 
-  Widget createListView()
+  double _getMediaSize({String type})
+  {
+    final size = MediaQuery.of(context);
+
+    switch (type) {
+      case 'padding-top':
+        return size.padding.top;
+        break;
+      case 'padding-bottom':
+        return size.padding.bottom;
+        break;
+      default:
+        return 0.0;
+    }
+  }
+
+  Widget _createListView()
   {
     return Container(
       color: AppTheme.background,
@@ -115,10 +317,10 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         backgroundColor: Colors.transparent,
         body: Stack(
           children: <Widget>[
-            buildListView(),
-            buildAppBar(),
+            _buildListView(),
+            _buildAppBar(),
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom,
+              height: _getMediaSize(type: 'padding-bottom'),
             )
           ],
         ),
@@ -126,13 +328,13 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     );
   }
 
-  Widget buildListView()
+  Widget _buildListView()
   {
     return ListView.builder(
       controller: _scrollController,
       padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top + 24,
-        bottom: 62 + MediaQuery.of(context).padding.bottom,
+        top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
+        bottom: _getMediaSize(type: 'padding-bottom') + 62,
       ),
       itemCount: _widgets.length,
       scrollDirection: Axis.vertical,
@@ -142,7 +344,7 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     );
   }
 
-  Widget createColumnView()
+  Widget _createColumnView()
   {
     return Container(
       color: AppTheme.background,
@@ -150,10 +352,10 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         backgroundColor: Colors.transparent,
         body: Stack(
           children: <Widget>[
-            buildColumnView(),
-            buildAppBar(),
+            _buildColumnView(),
+            _buildAppBar(),
             SizedBox(
-              height: MediaQuery.of(context).padding.bottom,
+              height: _getMediaSize(type: 'padding-bottom'),
             )
           ],
         ),
@@ -161,12 +363,12 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     );
   }
 
-  Widget buildColumnView()
+  Widget _buildColumnView()
   {
     return Padding(
       padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top + 24,
-        bottom: 62 + MediaQuery.of(context).padding.bottom,
+        top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
+        bottom: _getMediaSize(type: 'padding-bottom') + 62,
       ),
       child: Column(
         children: _widgets,
@@ -174,61 +376,184 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     );
   }
 
-  Widget buildAppBar()
+  Widget _createChatView()
+  {
+    return Container(
+      color: AppTheme.background,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: <Widget>[
+            _buildChatView(),
+            _buildChatInputUI(),
+            _buildAppBar(),
+            SizedBox(
+              height: _getMediaSize(type: 'padding-bottom'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _initMessages() async
+  {
+    if (_messagesInitialized) {
+      return true;
+    }
+
+    _messagesInitialized = true;
+
+    _messages = await widget.initMessages();
+
+    return true;
+  }
+
+  Widget _buildChatView()
+  {
+    return FutureBuilder(
+      future: _initMessages(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox(width: 0, height: 0);
+        }
+
+        return _buildChatListView();
+      },
+    );
+  }
+
+  Widget _buildChatListView()
+  {
+    final messageGroups = widget.buildMessageGroups(_messages);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        top: _getMediaSize(type: 'padding-top') + 50,
+      ),
+      child: ListView.builder(
+        reverse: true,
+        controller: _scrollController,
+        padding: EdgeInsets.only(
+          bottom: _getMediaSize(type: 'padding-bottom') + 104,
+        ),
+        itemCount: messageGroups.length,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+
+          if (index >= messageGroups.length - 1) {
+            // Loading next items
+            Future.delayed(Duration.zero, () {
+              final oldestMessageGroup = messageGroups[messageGroups.length - 1];
+              final rowsLength = oldestMessageGroup.rows.length;
+              final oldestMessage = oldestMessageGroup.rows[rowsLength - 1];
+
+              widget.loadPastMessages(oldestMessage.date, this);
+            });
+          }
+
+          return messageGroups[index];
+        },
+      ),
+    );
+  }
+
+  Widget _buildChatInputUI()
+  {
+    return Positioned(
+      bottom: _getMediaSize(type: 'padding-bottom') + 50,
+      left:  0,
+      right: 0,
+      child: Container(
+        color: AppTheme.white,
+        width: double.infinity,
+        height: 50,
+        child: Stack(
+          overflow: Overflow.visible,
+          children: <Widget>[
+
+            // Overflow white mask
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 50,
+              child: Container(
+                color: AppTheme.white,
+                height: _getMediaSize(type: 'padding-bottom') + 50,
+              ),
+            ),
+
+            // Main input UI
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: Container(
+                color: AppTheme.white,
+                child: widget.buildChatInputControlBar(),
+              ),
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar()
   {
     return Column(
       children: <Widget>[
         AnimatedView(
           animationController: widget.animationController,
           animation: _topBarAnimation,
-          child: getChild(),
+          child: _getAppBarChild(),
         ),
-      ],
+      ]
     );
   }
 
-  Widget getChild()
+  Widget _getAppBarChild()
   {
+    Radius radius = const Radius.circular(32.0);
+    if (widget.type == BaseTabType.Chat) {
+      radius = const Radius.circular(0.0);
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.white.withOpacity(_topBarOpacity),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(32.0),
+        borderRadius: BorderRadius.only(
+          bottomLeft: radius,
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-              color: AppTheme.grey.withOpacity(0.4 * _topBarOpacity),
-              offset: const Offset(1.1, 1.1),
-              blurRadius: 10.0
+            color: AppTheme.grey.withOpacity(0.4 * _topBarOpacity),
+            offset: const Offset(1.1, 1.1),
+            blurRadius: 10.0
           ),
         ],
       ),
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: MediaQuery.of(context).padding.top,
+            height: _getMediaSize(type: 'padding-top'),
           ),
           Padding(
             padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16 - 8.0 * _topBarOpacity,
-                bottom: 12 - 8.0 * _topBarOpacity
+              left: 16,
+              right: 16,
+              top: 16 - 8.0 * _topBarOpacity,
+              bottom: 12 - 8.0 * _topBarOpacity
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 2, right: 2, top: 8, bottom: 8),
-                  child: new Container(
-                    height: 40 - (10 * _topBarOpacity),
-                    width: 40 - (10 * _topBarOpacity),
-                    child: widget.resolveIconImage(),
-                  ),
-                ),
+                _buildBackWidget(),
+                _buildIconImage(),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+                    padding: const EdgeInsets.only(left: 8, right: 4, top: 8, bottom: 8),
                     child: Text(
                       widget.getTitle(),
                       textAlign: TextAlign.left,
@@ -249,4 +574,86 @@ class _BaseTabState extends State<BaseTab> with TickerProviderStateMixin
       ),
     );
   }
+
+  Widget _buildBackWidget()
+  {
+    if (!widget.showBackLink) {
+      return const SizedBox(width: 0, height: 0);
+    }
+
+    return GestureDetector(
+      onTap: widget.onBackLinkTap,
+      child: SizedBox(
+        height: 40 - (10 * _topBarOpacity),
+        width: 40 - (10 * _topBarOpacity),
+        child: Icon(
+          widget.backIcon,
+          color: AppTheme.darkText,
+          size: 20 - (5 * _topBarOpacity),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconImage()
+  {
+    Widget iconImage = const SizedBox(width: 0, height: 0);
+
+    final hasIconImage    = widget.resolveIconImage() != null;
+    final hasIconImageUrl = widget.resolveIconImageAsUrl() != null;
+    final iconSize = 40 - (10 * _topBarOpacity);
+
+    if (hasIconImage) {
+      iconImage = Padding(
+        padding: const EdgeInsets.only(left: 2, right: 2, top: 8, bottom: 8),
+        child: new Container(
+            height: iconSize,
+            width: iconSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: widget.resolveIconImage().image,
+              ),
+            )
+        ),
+      );
+    } else if (hasIconImageUrl) {
+      iconImage = Material(
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.all(
+          Radius.circular(20.0),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: widget.resolveIconImageAsUrl(),
+          width: iconSize,
+          height: iconSize,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            width: iconSize,
+            height: iconSize,
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: AppTheme.chatLightGrey,
+            ),
+            child: CircularProgressIndicator(
+              strokeWidth: 1.0,
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.grey),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            child: Image.asset(
+              'images/no-image-g.png',
+              width: iconSize,
+              height: iconSize,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return iconImage;
+  }
+
 }

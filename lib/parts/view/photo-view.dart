@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app-theme.dart';
+
 class PhotoView extends StatefulWidget
 {
   final List<String> photoAssetPaths;
@@ -132,7 +134,7 @@ class PhotoIndicator extends StatelessWidget
         child: Container(
           height: 3.0,
           decoration: BoxDecoration(
-            color: const Color(0x33000000),
+            color: AppTheme.shadow3,
             borderRadius: BorderRadius.circular(2.5)
           ),
         ),
@@ -152,7 +154,7 @@ class PhotoIndicator extends StatelessWidget
             borderRadius: BorderRadius.circular(2.5),
             boxShadow: [
               BoxShadow(
-                color: const Color(0x22000000),
+                color: AppTheme.shadow2,
                 blurRadius: 2.0,
                 spreadRadius: 0.0,
                 offset: const Offset(0.0, 1.0)

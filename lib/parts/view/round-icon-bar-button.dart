@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app-theme.dart';
 
 class RoundIconBarButton extends StatelessWidget
 {
@@ -37,7 +38,7 @@ class RoundIconBarButton extends StatelessWidget
         color: Colors.white,
         boxShadow: [
           new BoxShadow(
-            color: const Color(0x11000000),
+            color: AppTheme.shadow1,
             blurRadius: 10.0
           ),
         ]
