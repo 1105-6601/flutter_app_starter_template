@@ -3,6 +3,7 @@ import 'package:flutter_app_starter_template/parts/view/side-scroll-view-item-co
 import 'package:flutter_app_starter_template/parts/view/side-scroll-view-item.dart';
 import 'package:flutter_app_starter_template/util/ui-util.dart';
 import '../../app-theme.dart';
+import 'animated-view.dart';
 
 class SideScrollView extends StatefulWidget
 {
@@ -49,17 +50,10 @@ class _SideScrollViewState extends State<SideScrollView> with TickerProviderStat
   {
     _animationController.forward();
 
-    return AnimatedBuilder(
-      animation: widget.mainScreenAnimationController,
-      builder: (BuildContext context, Widget child) {
-        return FadeTransition(
-          opacity: widget.mainScreenAnimation,
-          child: Transform(
-            transform: Matrix4.translationValues(0.0, 30 * (1.0 - widget.mainScreenAnimation.value), 0.0),
-            child: widget.configs.length == 0 ? getEmptyView() : getDefaultView(),
-          ),
-        );
-      },
+    return AnimatedView(
+        animationController: widget.mainScreenAnimationController,
+        animation: widget.mainScreenAnimation,
+        child: widget.configs.length == 0 ? getEmptyView() : getDefaultView()
     );
   }
 

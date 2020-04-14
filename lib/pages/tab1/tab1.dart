@@ -16,7 +16,7 @@ class Tab1 extends BaseTab
     Key key,
     this.animationController,
     this.changeTabBody,
-  }) : super(
+  }) : super.list(
     key: key,
     animationController: animationController,
     changeTabBody: changeTabBody,
@@ -25,7 +25,7 @@ class Tab1 extends BaseTab
   @override
   String getTitle()
   {
-    return 'ダッシュボード';
+    return 'Dashboard UI';
   }
 
   @override
@@ -35,7 +35,7 @@ class Tab1 extends BaseTab
   }
 
   @override
-  List<Widget> createListViews()
+  List<Widget> generateWidgets()
   {
     final listViews = <Widget>[];
 

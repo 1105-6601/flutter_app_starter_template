@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_starter_template/parts/view/side-scroll-view-item-config.dart';
+import 'animated-view.dart';
 import '../../app-theme.dart';
 
 class SideScrollViewItem extends StatelessWidget
@@ -16,22 +17,16 @@ class SideScrollViewItem extends StatelessWidget
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animationController,
-      builder: (BuildContext context, Widget child) {
-        return FadeTransition(
-          opacity: animation,
-          child: Transform(
-            transform: Matrix4.translationValues(100 * (1.0 - animation.value), 0.0, 0.0),
-            child: getChild(),
-          ),
-        );
-      },
+  Widget build(BuildContext context)
+  {
+    return AnimatedView.horizontal(
+      animationController: animationController,
+      animation: animation,
+      childBuilder: getChild
     );
   }
 
-  Widget getChild()
+  Widget getChild(BuildContext context, Animation animation)
   {
     List<Widget> stackChildren = [];
 

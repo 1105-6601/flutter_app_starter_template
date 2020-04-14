@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app_starter_template/parts/form/button.dart';
 import 'package:flutter_app_starter_template/parts/form/text-input.dart';
+import 'package:flutter_app_starter_template/parts/view/animated-view.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import '../../../app-theme.dart';
 
@@ -40,17 +41,10 @@ class _LoginViewState extends State<LoginView>
 
     widget.animationController.forward();
 
-    return AnimatedBuilder(
-      animation: widget.animationController,
-      builder: (BuildContext context, Widget child) {
-        return FadeTransition(
-          opacity: widget.animation,
-          child: new Transform(
-            transform: new Matrix4.translationValues(0.0, 30 * (1.0 - widget.animation.value), 0.0),
-            child: getChild(),
-          ),
-        );
-      },
+    return AnimatedView(
+      animationController: widget.animationController,
+      animation: widget.animation,
+      child: getChild(),
     );
   }
 

@@ -16,7 +16,7 @@ class Tab3 extends BaseTab
     Key key,
     this.animationController,
     this.changeTabBody,
-  }) : super(
+  }) : super.list(
     key: key,
     animationController: animationController,
     changeTabBody: changeTabBody,
@@ -35,7 +35,7 @@ class Tab3 extends BaseTab
   }
 
   @override
-  List<Widget> createListViews()
+  List<Widget> generateWidgets()
   {
     final listViews = <Widget>[];
 
