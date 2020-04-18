@@ -299,10 +299,10 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
 
     switch (type) {
       case 'padding-top':
-        return size.padding.top;
+        return size.padding.top; /// e.g.) iPhone Xs max => 44, Android(Nexus_6) => 24
         break;
       case 'padding-bottom':
-        return size.padding.bottom;
+        return size.padding.bottom; /// e.g.) iPhone Xs max => 34, Android(Nexus_6) => 0
         break;
       default:
         return 0.0;
@@ -319,9 +319,6 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
           children: <Widget>[
             _buildListView(),
             _buildAppBar(),
-            SizedBox(
-              height: _getMediaSize(type: 'padding-bottom'),
-            )
           ],
         ),
       ),
@@ -334,7 +331,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
       controller: _scrollController,
       padding: EdgeInsets.only(
         top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
-        bottom: _getMediaSize(type: 'padding-bottom') + 62,
+        bottom: UiUtil.displayBottomMargin(context) + 62,
       ),
       itemCount: _widgets.length,
       scrollDirection: Axis.vertical,
@@ -354,9 +351,6 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
           children: <Widget>[
             _buildColumnView(),
             _buildAppBar(),
-            SizedBox(
-              height: _getMediaSize(type: 'padding-bottom'),
-            )
           ],
         ),
       ),
@@ -368,7 +362,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     return Padding(
       padding: EdgeInsets.only(
         top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
-        bottom: _getMediaSize(type: 'padding-bottom') + 62,
+        bottom: UiUtil.displayBottomMargin(context) + 62,
       ),
       child: Column(
         children: _widgets,
@@ -387,9 +381,6 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
             _buildChatView(),
             _buildChatInputUI(),
             _buildAppBar(),
-            SizedBox(
-              height: _getMediaSize(type: 'padding-bottom'),
-            )
           ],
         ),
       ),
@@ -435,7 +426,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         reverse: true,
         controller: _scrollController,
         padding: EdgeInsets.only(
-          bottom: _getMediaSize(type: 'padding-bottom') + 104,
+          bottom: UiUtil.displayBottomMargin(context) + 104,
         ),
         itemCount: messageGroups.length,
         scrollDirection: Axis.vertical,
@@ -461,7 +452,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
   Widget _buildChatInputUI()
   {
     return Positioned(
-      bottom: _getMediaSize(type: 'padding-bottom') + 50,
+      bottom: UiUtil.displayBottomMargin(context) + 50,
       left:  0,
       right: 0,
       child: Container(
@@ -479,7 +470,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
               top: 50,
               child: Container(
                 color: AppTheme.white,
-                height: _getMediaSize(type: 'padding-bottom') + 50,
+                height: UiUtil.displayBottomMargin(context) + 50,
               ),
             ),
 
