@@ -21,6 +21,8 @@ class AppTheme
   static const Color chatGrey      = Color(0xffaeaeae);
   static const Color chatLightGrey = Color(0xffE1E1E1);
 
+  static const Color chartBg = Color(0xff232d37);
+
   static const Color shadow1  = Color(0x11000000);
   static const Color shadow16 = Color(0x16000000);
   static const Color shadow2  = Color(0x22000000);

@@ -39,6 +39,7 @@ dependencies:
   smart_select: 3.0.3
   device_info: 0.4.2+1
   bot_toast: 2.4.0
+  fl_chart: 0.9.2
   faker: 1.2.1
   http: 0.12.0+4
   uuid: 2.0.4

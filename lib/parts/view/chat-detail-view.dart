@@ -50,6 +50,12 @@ class ChatDetailView extends BaseTab
   }
 
   @protected
+  void onSwipeRight()
+  {
+    onBackLinkTap();
+  }
+
+  @protected
   Future<List<Message>> initMessages() async
   {
     // FIXME: Get valid self user data.

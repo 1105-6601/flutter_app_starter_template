@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app_starter_template/entity/message.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_app_starter_template/parts/view/animated-view.dart';
 import 'package:flutter_app_starter_template/parts/view/chat-text-group.dart';
 import 'package:flutter_app_starter_template/parts/view/chat-user.dart';
 import 'package:flutter_app_starter_template/util/ui-util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../app-theme.dart';
 
 enum BaseTabType
@@ -21,9 +21,9 @@ abstract class BaseTab extends StatefulWidget
     Key key,
     this.animationController,
     this.changeTabBody,
-    this.type,
     this.showBackLink: false,
     this.backIcon: Icons.arrow_back_ios,
+    this.type,
   }) : super(key: key);
 
   const BaseTab.list({
@@ -55,21 +55,15 @@ abstract class BaseTab extends StatefulWidget
 
   final AnimationController animationController;
   final Function(Widget widget) changeTabBody;
-  final BaseTabType type;
   final bool showBackLink;
   final IconData backIcon;
+  final BaseTabType type;
 
   @override
   BaseTabState createState() => BaseTabState();
 
   @protected
   String getTitle();
-
-  @protected
-  List<Widget> generateWidgets()
-  {
-    return [];
-  }
 
   @protected
   Image resolveIconImage()
@@ -84,9 +78,9 @@ abstract class BaseTab extends StatefulWidget
   }
 
   @protected
-  Widget buildChatInputControlBar()
+  Future<List<Widget>> initWidgets() async
   {
-    return const SizedBox(width: 0, height: 0);
+    return [];
   }
 
   @protected
@@ -106,9 +100,19 @@ abstract class BaseTab extends StatefulWidget
     return [];
   }
 
+  @protected
+  Widget buildChatInputControlBar()
+  {
+    return const SizedBox(width: 0, height: 0);
+  }
 
   @protected
   void onBackLinkTap()
+  {
+  }
+
+  @protected
+  void onSwipeRight()
   {
   }
 }
@@ -185,14 +189,8 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
   double _topBarOpacity = 0.0;
   List<Widget> _widgets = [];
   List<Message> _messages = [];
+  bool _widgetsInitialized = false;
   bool _messagesInitialized = false;
-
-  void addMessages(List<Message> messages)
-  {
-    setState(() {
-      _messages.addAll(messages);
-    });
-  }
 
   @override
   void initState()
@@ -244,9 +242,14 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
       ..setController(_textEditingController)
       ..addListener(_onMessageReceived);
 
-    _widgets = widget.generateWidgets();
-
     super.initState();
+  }
+
+  void addMessages(List<Message> messages)
+  {
+    setState(() {
+      _messages.addAll(messages);
+    });
   }
 
   void _onMessageReceived()
@@ -278,19 +281,32 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
   {
     widget.animationController.forward();
 
+    Widget content;
+
     switch (widget.type) {
       case BaseTabType.List:
-        return _createListView();
+        content = _createListView();
         break;
       case BaseTabType.Column:
-        return _createColumnView();
+        content = _createColumnView();
         break;
       case BaseTabType.Chat:
-        return _createChatView();
+        content = _createChatView();
         break;
       default:
-        return Container();
+        content = Container();
+        break;
     }
+
+    return GestureDetector(
+      onPanUpdate: (details) {
+        /// Swiping in right direction
+        if (details.delta.dx > 25) {
+          widget.onSwipeRight();
+        }
+      },
+      child: content,
+    );
   }
 
   double _getMediaSize({String type})
@@ -317,27 +333,26 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         backgroundColor: Colors.transparent,
         body: Stack(
           children: <Widget>[
-            _buildListView(),
+
+            _initializer<bool>(_initWidgets, () {
+              return  ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.only(
+                  top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
+                  bottom: UiUtil.displayBottomMargin(context) + 62,
+                ),
+                itemCount: _widgets.length,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (BuildContext context, int index) {
+                  return _widgets[index];
+                },
+              );
+            }),
+
             _buildAppBar(),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildListView()
-  {
-    return ListView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
-        bottom: UiUtil.displayBottomMargin(context) + 62,
-      ),
-      itemCount: _widgets.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        return _widgets[index];
-      },
     );
   }
 
@@ -349,23 +364,22 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         backgroundColor: Colors.transparent,
         body: Stack(
           children: <Widget>[
-            _buildColumnView(),
+
+            _initializer<bool>(_initWidgets, () {
+              return Padding(
+                padding: EdgeInsets.only(
+                  top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
+                  bottom: UiUtil.displayBottomMargin(context) + 62,
+                ),
+                child: Column(
+                  children: _widgets,
+                ),
+              );
+            }),
+
             _buildAppBar(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildColumnView()
-  {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height + _getMediaSize(type: 'padding-top') + 24,
-        bottom: UiUtil.displayBottomMargin(context) + 62,
-      ),
-      child: Column(
-        children: _widgets,
       ),
     );
   }
@@ -378,13 +392,40 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
         backgroundColor: Colors.transparent,
         body: Stack(
           children: <Widget>[
-            _buildChatView(),
+            _initializer<bool>(_initMessages, _buildChatListView),
             _buildChatInputUI(),
             _buildAppBar(),
           ],
         ),
       ),
     );
+  }
+
+  FutureBuilder<T> _initializer<T>(Function future, Function builder)
+  {
+    return FutureBuilder(
+      future: future(),
+      builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox(width: 0, height: 0);
+        }
+
+        return builder();
+      },
+    );
+  }
+
+  Future<bool> _initWidgets() async
+  {
+    if (_widgetsInitialized) {
+      return true;
+    }
+
+    _widgetsInitialized = true;
+
+    _widgets = await widget.initWidgets();
+
+    return true;
   }
 
   Future<bool> _initMessages() async
@@ -398,20 +439,6 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
     _messages = await widget.initMessages();
 
     return true;
-  }
-
-  Widget _buildChatView()
-  {
-    return FutureBuilder(
-      future: _initMessages(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) {
-          return const SizedBox(width: 0, height: 0);
-        }
-
-        return _buildChatListView();
-      },
-    );
   }
 
   Widget _buildChatListView()
@@ -499,6 +526,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
           animationController: widget.animationController,
           animation: _topBarAnimation,
           child: _getAppBarChild(),
+          movingDistance: 0,
         ),
       ]
     );
@@ -646,5 +674,4 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
 
     return iconImage;
   }
-
 }

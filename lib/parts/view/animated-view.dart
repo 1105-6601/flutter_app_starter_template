@@ -14,6 +14,7 @@ class AnimatedView extends StatelessWidget
   final Widget child;
   final Function(BuildContext, Animation) childBuilder;
   final AnimatedDirection direction;
+  final double movingDistance;
 
   AnimatedView({
     Key key,
@@ -21,6 +22,7 @@ class AnimatedView extends StatelessWidget
     this.animation,
     this.child,
     this.childBuilder,
+    this.movingDistance: 30.0
   }) :
     direction = AnimatedDirection.Vertical,
     super(key: key);
@@ -31,7 +33,8 @@ class AnimatedView extends StatelessWidget
      this.animation,
      this.child,
      this.childBuilder,
-   }) :
+     this.movingDistance: 100.0
+  }) :
       direction = AnimatedDirection.Horizontal,
       super(key: key);
 
@@ -47,7 +50,7 @@ class AnimatedView extends StatelessWidget
         return FadeTransition(
           opacity: animation,
           child: new Transform(
-            transform: generateMatrix(animation),
+            transform: _generateMatrix(animation),
             child: hasChildBuilder ? childBuilder(context, animation) : child,
           ),
         );
@@ -55,10 +58,10 @@ class AnimatedView extends StatelessWidget
     );
   }
 
-  Matrix4 generateMatrix(Animation animation)
+  Matrix4 _generateMatrix(Animation animation)
   {
-    final vertical   = Matrix4.translationValues(0.0, 30.0 * (1.0 - animation.value), 0.0);
-    final horizontal = Matrix4.translationValues(100.0 * (1.0 - animation.value), 0.0, 0.0);
+    final vertical   = Matrix4.translationValues(0.0, this.movingDistance * (1.0 - animation.value), 0.0);
+    final horizontal = Matrix4.translationValues(this.movingDistance * (1.0 - animation.value), 0.0, 0.0);
 
     switch (direction) {
       case AnimatedDirection.Vertical:

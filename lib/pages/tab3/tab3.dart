@@ -36,7 +36,7 @@ class Tab3 extends BaseTab
   }
 
   @override
-  List<Widget> generateWidgets()
+  Future<List<Widget>> initWidgets() async
   {
     final listViews = <Widget>[];
 

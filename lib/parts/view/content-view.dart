@@ -11,6 +11,8 @@ class ContentView extends StatefulWidget
   final EdgeInsets padding;
   final EdgeInsets paddingInner;
   final BorderRadius borderRadius;
+  final Color containerColor;
+  final Color containerColorFocus;
   final VoidCallback onTap;
 
   ContentView({
@@ -26,6 +28,8 @@ class ContentView extends StatefulWidget
         bottomRight: const Radius.circular(8.0),
         topRight:    const Radius.circular(68.0)
     ),
+    this.containerColor: Colors.white,
+    this.containerColorFocus: AppTheme.darkWhite,
     this.onTap,
   }) : super(key: key);
 
@@ -35,7 +39,15 @@ class ContentView extends StatefulWidget
 
 class _ContentViewState extends State<ContentView>
 {
-  Color containerColor = Colors.white;
+  Color containerColor;
+
+  @override
+  void initState()
+  {
+    containerColor = widget.containerColor;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context)
@@ -55,7 +67,7 @@ class _ContentViewState extends State<ContentView>
         onTap: () {
           if (widget.onTap != null) {
             setState(() {
-              containerColor = AppTheme.darkWhite;
+              containerColor = widget.containerColorFocus;
             });
 
             widget.onTap();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_starter_template/app-theme.dart';
 import 'package:flutter_app_starter_template/parts/view/content-view-inner-sample.dart';
 import 'package:flutter_app_starter_template/parts/view/content-view.dart';
+import 'package:flutter_app_starter_template/parts/view/line-chart-sample.dart';
 import 'package:flutter_app_starter_template/parts/view/side-scroll-view-item-config.dart';
 import 'package:flutter_app_starter_template/parts/view/side-scroll-view.dart';
 import 'package:flutter_app_starter_template/parts/view/title-view.dart';
@@ -35,22 +37,24 @@ class Tab1 extends BaseTab
   }
 
   @override
-  List<Widget> generateWidgets()
+  Future<List<Widget>> initWidgets() async
   {
     final listViews = <Widget>[];
 
+    int i = 0;
+
     listViews.add(
       TitleView(
-        title: 'タイトル0',
+        title: 'タイトル',
         subTitle: 'Side scroll view',
-        animation: UiUtil.createAnimation(animationController, 0),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
 
     listViews.add(
         SideScrollView(
-          mainScreenAnimation: UiUtil.createAnimation(animationController, 1),
+          mainScreenAnimation: UiUtil.createAnimation(animationController, i++),
           mainScreenAnimationController: animationController,
           configs: <SideScrollViewItemConfig>[
             SideScrollViewItemConfig(
@@ -137,9 +141,9 @@ class Tab1 extends BaseTab
 
     listViews.add(
       TitleView(
-        title: 'タイトル1',
-        subTitle: 'Sample content',
-        animation: UiUtil.createAnimation(animationController, 2),
+        title: 'タイトル',
+        subTitle: 'Line chart sample',
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -147,20 +151,39 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 3),
+        animation: UiUtil.createAnimation(animationController, i++),
+        containerColor: AppTheme.chartBg,
+        paddingInner: const EdgeInsets.only(right: 30, left: 6, top: 30, bottom: 6),
+        content: LineChartSample(),
+      ),
+    );
+
+    listViews.add(
+      TitleView(
+        title: 'タイトル',
+        subTitle: 'Sample content',
+        animation: UiUtil.createAnimation(animationController, i++),
+        animationController: animationController,
+      ),
+    );
+
+    listViews.add(
+      ContentView(
+        animationController: animationController,
+        animation: UiUtil.createAnimation(animationController, i++),
         content: ContentViewInnerSample(
           animationController: animationController,
-          animation: UiUtil.createAnimation(animationController, 3),
+          animation: UiUtil.createAnimation(animationController, i),
         ),
       ),
     );
 
     listViews.add(
       TitleView(
-        title: 'タイトル2',
+        title: 'タイトル',
         subTitle: 'マルチバイト',
         iconPositionTop: 2,
-        animation: UiUtil.createAnimation(animationController, 4),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -168,7 +191,7 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 5),
+        animation: UiUtil.createAnimation(animationController, i++),
         content: Container(
           child: Text('コンテンツ2'),
         ),
@@ -177,10 +200,10 @@ class Tab1 extends BaseTab
 
     listViews.add(
       TitleView(
-        title: 'タイトル3',
+        title: 'タイトル',
         subTitle: 'Mixed サブタイトル',
         iconPositionTop: 2,
-        animation: UiUtil.createAnimation(animationController, 6),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -188,7 +211,7 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 7),
+        animation: UiUtil.createAnimation(animationController, i++),
         content: Container(
           child: Text('コンテンツ3'),
         ),
@@ -197,10 +220,10 @@ class Tab1 extends BaseTab
 
     listViews.add(
       TitleView(
-        title: 'タイトル4',
+        title: 'タイトル',
         subTitle: 'アイコン無し',
         subTitleIcon: false,
-        animation: UiUtil.createAnimation(animationController, 8),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -208,7 +231,7 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 9),
+        animation: UiUtil.createAnimation(animationController, i++),
         content: Container(
           child: Text('コンテンツ4'),
         ),
@@ -217,11 +240,11 @@ class Tab1 extends BaseTab
 
     listViews.add(
       TitleView(
-        title: 'タイトル5',
+        title: 'タイトル',
         subTitle: 'アイコン変更',
         subTitleIconData: Icons.add_box,
         iconPositionTop: 3,
-        animation: UiUtil.createAnimation(animationController, 10),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -229,7 +252,7 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 11),
+        animation: UiUtil.createAnimation(animationController, i++),
         content: Container(
           child: Text('コンテンツ5'),
         ),
@@ -238,11 +261,11 @@ class Tab1 extends BaseTab
 
     listViews.add(
       TitleView(
-        title: 'タイトル6',
+        title: 'タイトル',
         subTitle: 'No icon subtitle',
         subTitlePositionTop: 3,
         subTitleIcon: false,
-        animation: UiUtil.createAnimation(animationController, 12),
+        animation: UiUtil.createAnimation(animationController, i++),
         animationController: animationController,
       ),
     );
@@ -250,7 +273,7 @@ class Tab1 extends BaseTab
     listViews.add(
       ContentView(
         animationController: animationController,
-        animation: UiUtil.createAnimation(animationController, 13),
+        animation: UiUtil.createAnimation(animationController, i++),
         content: Container(
           child: Text('コンテンツ6'),
         ),
