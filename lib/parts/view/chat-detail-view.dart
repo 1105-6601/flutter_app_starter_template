@@ -56,7 +56,7 @@ class ChatDetailView extends BaseTab
   }
 
   @protected
-  Future<List<Message>> initMessages() async
+  Future<List<Message>> initMessages(BuildContext context) async
   {
     // FIXME: Get valid self user data.
     final selfUser = ChatUser.generateMockSelf();

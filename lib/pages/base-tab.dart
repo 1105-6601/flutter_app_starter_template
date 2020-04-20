@@ -78,13 +78,13 @@ abstract class BaseTab extends StatefulWidget
   }
 
   @protected
-  Future<List<Widget>> initWidgets() async
+  Future<List<Widget>> initWidgets(BuildContext context) async
   {
     return [];
   }
 
   @protected
-  Future<List<Message>> initMessages() async
+  Future<List<Message>> initMessages(BuildContext context) async
   {
     return [];
   }
@@ -423,7 +423,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
 
     _widgetsInitialized = true;
 
-    _widgets = await widget.initWidgets();
+    _widgets = await widget.initWidgets(context);
 
     return true;
   }
@@ -436,7 +436,7 @@ class BaseTabState extends State<BaseTab> with TickerProviderStateMixin
 
     _messagesInitialized = true;
 
-    _messages = await widget.initMessages();
+    _messages = await widget.initMessages(context);
 
     return true;
   }

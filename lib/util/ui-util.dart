@@ -182,7 +182,11 @@ class UiUtil
     return Color(int.parse(hexColor, radix: 16));
   }
 
-  static Animation createAnimation(AnimationController animationController, int position)
+  static Animation createAnimation(AnimationController animationController, int position, {
+    double begin: 0.0,
+    double end: 1.0,
+    Curve curve: Curves.fastOutSlowIn
+  })
   {
     final delay = 0.1;
 
@@ -191,9 +195,11 @@ class UiUtil
       actualDelay = 1;
     }
 
-    return Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Interval(actualDelay, 1.0, curve: Curves.fastOutSlowIn))
+    return Tween<double>(begin: begin, end: end).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Interval(actualDelay, 1.0, curve: curve)
+      )
     );
   }
 }

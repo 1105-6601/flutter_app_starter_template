@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_starter_template/pages/tab1/tab1.dart';
 import 'package:flutter_app_starter_template/pages/tab2/tab2.dart';
 import 'package:flutter_app_starter_template/pages/tab3/tab3.dart';
+import 'package:flutter_app_starter_template/pages/tab4/tab4.dart';
 import 'package:flutter_app_starter_template/parts/navigation/curved-navigation-bar.dart';
 import 'package:flutter_app_starter_template/util/ui-util.dart';
 import 'dart:async';
@@ -77,6 +78,7 @@ class _AuthorizedState extends State<Authorized> with TickerProviderStateMixin
       Icon(Icons.dashboard, size: 30),
       Icon(Icons.view_carousel, size: 30),
       Icon(Icons.chat, size: 30),
+      Icon(Icons.table_chart, size: 30),
     ];
 
     return list;
@@ -119,6 +121,13 @@ class _AuthorizedState extends State<Authorized> with TickerProviderStateMixin
 
             case 2:
               _changeTabBody(Tab3(
+                animationController: _animationController,
+                changeTabBody: _changeTabBody,
+              ));
+              break;
+
+            case 3:
+              _changeTabBody(Tab4(
                 animationController: _animationController,
                 changeTabBody: _changeTabBody,
               ));
