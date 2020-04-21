@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_starter_template/parts/view/animated-view.dart';
 import 'package:flutter_app_starter_template/util/ui-util.dart';
 import '../../app-theme.dart';
 
@@ -10,12 +11,16 @@ enum ChangeBodyDirection {
 
 class TabView extends StatefulWidget
 {
+  final AnimationController parentAnimationController;
+  final Animation parentAnimation;
   final List<Widget> tabs;
   final List<Widget> children;
   final EdgeInsets bodyPadding;
 
   TabView({
     Key key,
+    this.parentAnimationController,
+    this.parentAnimation,
     @required this.tabs,
     @required this.children,
     this.bodyPadding: const EdgeInsets.all(0)
@@ -147,16 +152,20 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin
   Widget _buildChild()
   {
     return Expanded(
-      child: Stack(
-        children: <Widget>[
-          // Menus
-          _buildMenus(),
-          // Menu indicators
-          _buildInactiveIndicator(),
-          _buildActiveIndicator(),
-          // Body
-          _buildBody(),
-        ],
+      child: AnimatedView(
+        animationController: widget.parentAnimationController,
+        animation: widget.parentAnimation,
+        child: Stack(
+          children: <Widget>[
+            // Menus
+            _buildMenus(),
+            // Menu indicators
+            _buildInactiveIndicator(),
+            _buildActiveIndicator(),
+            // Body
+            _buildBody(),
+          ],
+        ),
       ),
     );
   }

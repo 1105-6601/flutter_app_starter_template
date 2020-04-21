@@ -39,6 +39,8 @@ class Tab4 extends BaseTab
 
     listViews.add(
       TabView(
+        parentAnimationController: animationController,
+        parentAnimation: UiUtil.createAnimation(animationController, 0),
         bodyPadding: const EdgeInsets.only(top: 16),
         tabs: [
           Icon(Icons.filter_1, size: 20),
@@ -83,6 +85,8 @@ class Tab4 extends BaseTab
 
         TabView(
             key: GlobalKey(),
+            parentAnimationController: animationController,
+            parentAnimation: UiUtil.createAnimation(animationController, i++),
             bodyPadding: const EdgeInsets.only(top: 16),
             tabs: [
               Icon(Icons.filter_1, size: 20),
