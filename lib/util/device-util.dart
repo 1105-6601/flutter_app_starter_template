@@ -52,16 +52,39 @@ class DeviceUtil
     return await SharedPreferences.getInstance();
   }
 
-  static Future<void> saveNetworkImage(String url, String filename) async
+  static Future<String> saveNetworkImage(String url, String filename) async
   {
     final repo = Repository();
     final docDir = await resolveDocumentDir();
+
+    String savePath;
+
     try {
       final imageResponse = await repo.getPlain(url);
-      final file = await File('$docDir/$filename').create(recursive: true);
+
+      String ext;
+
+      switch (imageResponse.headers['content-type']) {
+        case 'image/png':
+          ext = 'png';
+          break;
+        case 'image/gif':
+          ext = 'gif';
+          break;
+        case 'image/jpeg':
+        default:
+          ext = 'jpg';
+          break;
+      }
+
+      savePath = '$docDir/$filename.$ext';
+
+      final file = await File(savePath).create(recursive: true);
       await file.writeAsBytes(imageResponse.bodyBytes);
     } catch (e) {
       throw e;
     }
+
+    return savePath;
   }
 }

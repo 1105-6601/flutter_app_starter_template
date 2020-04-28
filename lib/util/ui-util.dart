@@ -79,9 +79,7 @@ class UiUtil
         }
     );
 
-    Future.delayed(Duration.zero, () {
-      Overlay.of(context).insert(entry);
-    });
+    Overlay.of(context).insert(entry);
 
     /// Return onFinish function.
     return () {
