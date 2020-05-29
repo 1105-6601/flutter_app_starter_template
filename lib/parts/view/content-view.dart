@@ -11,6 +11,7 @@ class ContentView extends StatefulWidget
   final EdgeInsets padding;
   final EdgeInsets paddingInner;
   final BorderRadius borderRadius;
+  final List<BoxShadow> boxShadow;
   final Color containerColor;
   final Color containerColorFocus;
   final VoidCallback onTap;
@@ -28,6 +29,13 @@ class ContentView extends StatefulWidget
         bottomRight: const Radius.circular(8.0),
         topRight:    const Radius.circular(68.0)
     ),
+    this.boxShadow: const <BoxShadow>[
+      const BoxShadow(
+          color:      const Color(0x22000000),
+          offset:     const Offset(1.1, 1.1),
+          blurRadius: 10.0
+      ),
+    ],
     this.containerColor: Colors.white,
     this.containerColorFocus: AppTheme.darkWhite,
     this.onTap,
@@ -77,13 +85,7 @@ class _ContentViewState extends State<ContentView>
           decoration: BoxDecoration(
             color: containerColor,
             borderRadius: widget.borderRadius,
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: AppTheme.grey.withOpacity(0.2),
-                offset: Offset(1.1, 1.1),
-                blurRadius: 10.0
-              ),
-            ],
+            boxShadow: widget.boxShadow,
           ),
           child: Padding(
             padding: widget.paddingInner,

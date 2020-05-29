@@ -31,6 +31,7 @@ class RawContentView extends StatelessWidget
           bottomRight: const Radius.circular(0),
           topRight:    const Radius.circular(0)
       ),
+      boxShadow: const <BoxShadow>[],
       containerColor: Colors.transparent,
       containerColorFocus: Colors.transparent,
       onTap: onTap,

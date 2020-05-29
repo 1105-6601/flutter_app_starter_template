@@ -137,6 +137,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin
   void dispose()
   {
     _indicatorAnimationController.dispose();
+    _tabBodyAnimationController.dispose();
 
     super.dispose();
   }
